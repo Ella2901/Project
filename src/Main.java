@@ -12,9 +12,11 @@ public class Main {
 
         Robot robot = new Robot(100, 100, 100);
         Entity package1 = new Package("P001", 200, 150);
+        Entity chargingStation = new ChargingStation("CS001", 300, 250);
 
         robot.display();
         package1.display();
+        chargingStation.display();
 
         robot.move();
         robot.display();
