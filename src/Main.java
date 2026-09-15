@@ -24,15 +24,12 @@ public class Main {
         robot.move(5);
         robot.display();
 
-        Grid <Robot> robotGrid = new Grid<>();
-        Robot robot2 = new Robot(150, 150, 80);
-        Robot robot3 = new Robot(200, 200, 60);
+        Grid<Entity> grid = new Grid<>();
 
-        robotGrid.addEntity(robot2);
-        robotGrid.addEntity(robot3);
-
-        robotGrid.displayEntities();
-
-        Grid <String> testGrid = new Grid<>();
+        grid.addEntity(robot);
+        grid.addEntity(package1);
+        grid.addEntity(chargingStation);
+        
+        grid.displayEntities();
     }
 }

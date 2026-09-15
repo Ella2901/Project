@@ -1,13 +1,19 @@
-import java.util.ArrayList;
-
 public class Warehouse {
-    private ArrayList<Entity> entities;
+    private Grid<Entity> grid;
 
     public Warehouse() {
-        entities = new ArrayList<>();
+        grid = new Grid<>();
     }
 
     public void addEntity(Entity entity) {
-        entities.add(entity);
+        grid.addEntity(entity);
+    }
+
+    public void displayEntities() {
+        grid.displayEntities();
+    }
+
+    public Grid<Entity> getGrid() {
+        return grid;
     }
 }

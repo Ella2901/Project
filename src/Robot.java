@@ -21,14 +21,16 @@ public class Robot extends Entity {
     // Move 1 unit to the right
     public void move() {
        x++;
+       battery--;
     }
 
     // Overload move method2
     // Move a specified distance to the right
     public void move(int distance) {
         x += distance;
+        battery -= distance;
     }
-    
+
     /* 
     public void move(int dx, int dy) {
         x += dx;

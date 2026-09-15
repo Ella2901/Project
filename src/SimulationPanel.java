@@ -10,7 +10,7 @@ public class SimulationPanel extends JPanel {
         
         // Robot representation
         g.fillRect(200, 200, 40, 40);
-        g.drawString("Robot", 200, 190);
+        g.drawString("Robot", 205, 230);
 
         // Package representation
         g.drawRect(400, 250, 30, 30);
