@@ -2,7 +2,7 @@ public class Warehouse {
     private Grid<Entity> grid;
 
     public Warehouse() {
-        grid = new Grid<>();
+        grid = new Grid<>(800,600);
     }
 
     public void addEntity(Entity entity) {
