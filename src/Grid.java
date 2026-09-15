@@ -31,6 +31,17 @@ public class Grid <T extends Entity> {
         return height;
     }
 
+    public boolean isValidPosition(int x, int y) {
+        return x >= 0 && x < width && y >= 0 && y < height;
+    }
+
+    public void checkPosition(int x, int y) {
+        if (!isValidPosition(x, y)) {
+            throw new InvalidPositionException(
+                "Position: (" + x + ", " + y + ") is outside the grid");
+        }
+    }
+
     public void displayEntities() {
         for (T entity : entities) {
             entity.display();
