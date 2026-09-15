@@ -2,8 +2,12 @@ import java.util.ArrayList;
 
 public class Grid <T extends Entity> {
     private ArrayList<T> entities;
+    private int width;
+    private int height;
 
-    public Grid() {
+    public Grid(int width, int height) {
+        this.width = width;
+        this.height = height;
         entities = new ArrayList<>();
     }
 
@@ -17,6 +21,14 @@ public class Grid <T extends Entity> {
 
     public int size() {
         return entities.size();
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 
     public void displayEntities() {
