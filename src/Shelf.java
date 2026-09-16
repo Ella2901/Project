@@ -1,7 +1,7 @@
-public class Self extends Entity {
+public class Shelf extends Entity {
     private String id;
 
-    public Self(String id, int x, int y) {
+    public Shelf(String id, int x, int y) {
         super(x, y);
         this.id = id;
     }

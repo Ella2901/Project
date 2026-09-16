@@ -21,25 +21,22 @@ public class Robot extends Entity {
     // Move 1 unit to the right
     public void move() {
        x++;
-       battery--;
+       battery--; 
+
+       if (battery < 0) {
+           battery = 0; 
+       }
     }
 
     // Overload move method2
     // Move a specified distance to the right
     public void move(int distance) {
         x += distance;
-        battery -= distance;
-    }
+        battery -= Math.abs(distance); 
 
-    /* 
-    public void move(int dx, int dy) {
-        x += dx;
-        y += dy;
-        battery -= (Math.abs(dx) + Math.abs(dy)); // Decrease battery based on movement
         if (battery < 0) {
-            battery = 0; // Ensure battery doesn't go below 0
+            battery = 0; 
         }
     }
-    */
 
 }
