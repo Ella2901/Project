@@ -4,8 +4,8 @@ import java.awt.Graphics;
 public class SimulationPanel extends JPanel {
     private Warehouse warehouse;
 
-    public SimulationPanel() {
-        warehouse = new Warehouse();
+    public SimulationPanel(Warehouse warehouse) {
+        this.warehouse = warehouse;
     }
 
     @Override
@@ -62,23 +62,5 @@ public class SimulationPanel extends JPanel {
                 g.drawString("Entity", x, y);
             }
         }
-
-        /* 
-        // Robot representation
-        g.fillRect(200, 200, 40, 40);
-        g.drawString("Robot", 205, 230);
-
-        // Package representation
-        g.drawRect(400, 250, 30, 30);
-        g.drawString("Package", 390, 240);
-
-        // Charging station
-        g.drawRect(100, 450, 100, 50);
-        g.drawString("Charging", 120, 480);
-
-        // Delivery station
-        g.drawRect(600, 450, 100, 50);
-        g.drawString("Delivery", 620, 480);
-        */
     }
 }
