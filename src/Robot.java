@@ -39,4 +39,17 @@ public class Robot extends Entity {
         }
     }
 
+    
+    private MovementStrategy movementStrategy;
+
+    public void setMovementStrategy(MovementStrategy strategy) {
+        this.movementStrategy = strategy;
+    }
+
+    public void performMove(Warehouse warehouse, int direction) {
+        if (movementStrategy != null) {
+            movementStrategy.move(this, warehouse, direction);
+        }
+    }
+
 }
