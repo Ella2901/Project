@@ -8,6 +8,8 @@ public class Main {
 
         // Create entities
         Robot robot = new Robot(100, 100, 1000);
+        robot.setMovementStrategy(new NormalMovement());
+
         Package package1 = new Package("P001", 200, 150);
         ChargingStation chargingStation = new ChargingStation("CS001", 100, 400);
         DeliveryStation deliveryStation = new DeliveryStation("DS001", 600, 400);
@@ -42,7 +44,7 @@ public class Main {
                 }
 
                 // Move the robot 2 units in the current direction
-                warehouse.moveRobot(robot, 2*distance[0]);
+                robot.performMove(warehouse, distance[0]);
 
                 panel.repaint(); // Refresh the panel to show updated positions
             } 
