@@ -8,7 +8,8 @@ public class Main {
 
         // Create entities
         Robot robot = new Robot(100, 100, 1000);
-        robot.setMovementStrategy(new NormalMovement());
+        // robot.setMovementStrategy(new NormalMovement());
+        robot.setMovementStrategy(new FastMovement());
 
         Package package1 = new Package("P001", 200, 150);
         ChargingStation chargingStation = new ChargingStation("CS001", 100, 400);
