@@ -1,5 +1,9 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Robot extends Entity {
     private int battery;
+    private List<RobotObserver> observers = new ArrayList<>();
 
     public Robot(int x, int y, int battery) {
         super(x, y);
@@ -17,28 +21,29 @@ public class Robot extends Entity {
         System.out.println("Robot at (" + getX() + ", " + getY() + ") with battery: " + battery);
     }
 
+    
     // Overload move method1
     // Move 1 unit to the right
     public void move() {
-       x++;
-       battery--; 
-
-       if (battery < 0) {
-           battery = 0; 
-       }
+        move(1);
     }
 
     // Overload move method2
-    // Move a specified distance to the right
+    // Move a specified distance
     public void move(int distance) {
+        if (distance == 0) {
+            return;
+        }
+
         x += distance;
-        battery -= Math.abs(distance); 
+        battery -= Math.abs(distance);
 
         if (battery < 0) {
-            battery = 0; 
+            battery = 0;
         }
-    }
 
+        notifyObservers();
+    }
     
     private MovementStrategy movementStrategy;
 
@@ -51,5 +56,23 @@ public class Robot extends Entity {
             movementStrategy.move(this, warehouse, direction);
         }
     }
+
+
+    public void addObserver(RobotObserver observer) {
+        if (observer != null && !observers.contains(observer)) {
+            observers.add(observer);
+        }
+    }
+
+    public void removeObserver(RobotObserver observer) {
+        observers.remove(observer);
+    }
+
+    private void notifyObservers() {
+        for (RobotObserver observer : observers) {
+            observer.onRobotMoved(this);
+        }
+    }
+
 
 }
