@@ -1,7 +1,7 @@
 import javax.swing.JPanel;
 import java.awt.Graphics;
 
-public class SimulationPanel extends JPanel {
+public class SimulationPanel extends JPanel implements RobotObserver {
     private Warehouse warehouse;
 
     public SimulationPanel(Warehouse warehouse) {
@@ -63,4 +63,10 @@ public class SimulationPanel extends JPanel {
             }
         }
     }
+
+    // Observer pattern: Update the panel when the robot moves
+    @Override
+        public void onRobotMoved(Robot robot) {
+            repaint();
+        }
 }

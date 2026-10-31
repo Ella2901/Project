@@ -1,3 +1,4 @@
-public class RobotObserver {
-    
+public interface RobotObserver {
+    void onRobotMoved(Robot robot);
 }
+
