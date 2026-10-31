@@ -66,7 +66,11 @@ public class SimulationPanel extends JPanel implements RobotObserver {
 
     // Observer pattern: Update the panel when the robot moves
     @Override
-        public void onRobotMoved(Robot robot) {
-            repaint();
-        }
+    public void onRobotMoved(Robot robot) {
+        /* Testing the observer pattern
+        System.out.println("Observer notified: Robot moved to ("
+            + robot.getX() + ", " + robot.getY() + ")");
+        */
+        repaint();
+    }
 }
