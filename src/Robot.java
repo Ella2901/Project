@@ -4,6 +4,7 @@ import java.util.List;
 public class Robot extends Entity {
     private int battery;
     private List<RobotObserver> observers = new ArrayList<>();
+    private RobotState currentState;
 
     public Robot(int x, int y, int battery) {
         super(x, y);
@@ -74,5 +75,16 @@ public class Robot extends Entity {
         }
     }
 
+    public void setState(RobotState state) {
+        this.currentState = state;
+        notifyObservers();
+    }
 
+    public RobotState getState() {
+        return currentState;
+    }
+
+    public void performAction() {
+        currentState.handle(this);
+    }
 }

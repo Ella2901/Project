@@ -89,5 +89,14 @@ public class Main {
         }
 
         */
+
+         robot.setState(new DeliveringState());
+        robot.performAction();
+
+        robot.setState(new ChargingState());
+        robot.performAction();
+
+        robot.setState(new IdleState());
+        robot.performAction();
     }
 }
