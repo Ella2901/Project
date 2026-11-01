@@ -8,6 +8,9 @@ public class Main {
 
         // Create entities
         Robot robot = new Robot(100, 100, 1000);
+        // robot.setMovementStrategy(new NormalMovement());
+        robot.setMovementStrategy(new FastMovement());
+
         Package package1 = new Package("P001", 200, 150);
         ChargingStation chargingStation = new ChargingStation("CS001", 100, 400);
         DeliveryStation deliveryStation = new DeliveryStation("DS001", 600, 400);
@@ -23,6 +26,7 @@ public class Main {
         // Create a simulation panel and add it to a JFrame
         JFrame window = new JFrame("Warehouse Simulation");
         SimulationPanel panel = new SimulationPanel(warehouse);
+        robot.addObserver(panel); // Register the panel as an observer of the robot
 
         window.add(panel);
         window.setSize(800, 600);
@@ -42,9 +46,7 @@ public class Main {
                 }
 
                 // Move the robot 2 units in the current direction
-                warehouse.moveRobot(robot, 2*distance[0]);
-
-                panel.repaint(); // Refresh the panel to show updated positions
+                robot.performMove(warehouse, distance[0]);
             } 
 
             catch (InvalidPositionException ex) {
@@ -56,7 +58,7 @@ public class Main {
 
         timer.start(); // Start the timer to move the robot every 100 milliseconds
 
-        /* 
+        /* Testing the Robot, Package, and ChargingStation classes
         Robot robot = new Robot(100, 100, 100);
         Entity package1 = new Package("P001", 200, 150);
         Entity chargingStation = new ChargingStation("CS001", 300, 250);
@@ -87,5 +89,14 @@ public class Main {
         }
 
         */
+
+         robot.setState(new DeliveringState());
+        robot.performAction();
+
+        robot.setState(new ChargingState());
+        robot.performAction();
+
+        robot.setState(new IdleState());
+        robot.performAction();
     }
 }
