@@ -23,6 +23,16 @@ public class Main {
         warehouse.addEntity(deliveryStation);
         warehouse.addEntity(shelf);
 
+        Grid<Entity> grid = warehouse.getGrid();
+
+        // Count the number of robots in the grid
+        long robotCount = grid.stream().filter(e -> e instanceof Robot).count();
+        System.out.println("Number of robots in the grid: " + robotCount);
+
+        // Count the number of packages in the grid
+        long packageCount = grid.stream().filter(e -> e instanceof Package).count();
+        System.out.println("Number of packages in the grid: " + packageCount);
+
         // Create a simulation panel and add it to a JFrame
         JFrame window = new JFrame("Warehouse Simulation");
         SimulationPanel panel = new SimulationPanel(warehouse);
