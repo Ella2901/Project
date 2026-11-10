@@ -8,8 +8,16 @@ public class Main {
 
         // Create entities
         Robot robot = new Robot(100, 100, 1000);
-        // robot.setMovementStrategy(new NormalMovement());
-        robot.setMovementStrategy(new FastMovement());
+        
+        // Normal movement using lambda expression
+        MovementStrategy normalMovement = (r, w, d) -> w.moveRobot(r, 2 * d);
+
+        // Fast movement using lambda expression
+        MovementStrategy fastMovement = (r, w, d) -> w.moveRobot(r, 5 * d);
+
+        // Choose the movement strategy for the robot
+        robot.setMovementStrategy(normalMovement);
+
 
         Package package1 = new Package("P001", 200, 150);
         ChargingStation chargingStation = new ChargingStation("CS001", 100, 400);
