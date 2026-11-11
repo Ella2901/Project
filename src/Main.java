@@ -1,65 +1,68 @@
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 
 public class Main {
     public static void main(String[] args) {
-        // Create a warehouse instance
-        Warehouse warehouse = new Warehouse();
+        SwingUtilities.invokeLater(() -> {
+            // Create a warehouse instance
+            Warehouse warehouse = new Warehouse();
 
-        // Create entities
-        Robot robot = new Robot(100, 100, 1000);
-        // robot.setMovementStrategy(new NormalMovement());
-        robot.setMovementStrategy(new FastMovement());
+            // Create entities
+            Robot robot = new Robot(100, 100, 1000);
+            // robot.setMovementStrategy(new NormalMovement());
+            robot.setMovementStrategy(new FastMovement());
 
-        Package package1 = new Package("P001", 200, 150);
-        ChargingStation chargingStation = new ChargingStation("CS001", 100, 400);
-        DeliveryStation deliveryStation = new DeliveryStation("DS001", 600, 400);
-        Shelf shelf = new Shelf("S001", 600, 150);
+            Package package1 = new Package("P001", 200, 150);
+            ChargingStation chargingStation = new ChargingStation("CS001", 100, 400);
+            DeliveryStation deliveryStation = new DeliveryStation("DS001", 600, 400);
+            Shelf shelf = new Shelf("S001", 600, 150);
 
-        // Add entities to the warehouse
-        warehouse.addEntity(robot);
-        warehouse.addEntity(package1);
-        warehouse.addEntity(chargingStation);
-        warehouse.addEntity(deliveryStation);
-        warehouse.addEntity(shelf);
+            // Add entities to the warehouse
+            warehouse.addEntity(robot);
+            warehouse.addEntity(package1);
+            warehouse.addEntity(chargingStation);
+            warehouse.addEntity(deliveryStation);
+            warehouse.addEntity(shelf);
 
-        warehouse.displayBatteryStatistics();
+            warehouse.displayBatteryStatistics();
 
-        Grid<Entity> grid = warehouse.getGrid();
+            Grid<Entity> grid = warehouse.getGrid();
 
-        // Count the number of robots in the grid
-        long robotCount = grid.stream().filter(e -> e instanceof Robot).count();
-        System.out.println("Number of robots in the grid: " + robotCount);
+            // Count the number of robots in the grid
+            long robotCount = grid.stream().filter(e -> e instanceof Robot).count();
+            System.out.println("Number of robots in the grid: " + robotCount);
 
-        // Count the number of packages in the grid
-        long packageCount = grid.stream().filter(e -> e instanceof Package).count();
-        System.out.println("Number of packages in the grid: " + packageCount);
+            // Count the number of packages in the grid
+            long packageCount = grid.stream().filter(e -> e instanceof Package).count();
+            System.out.println("Number of packages in the grid: " + packageCount);
 
-        // Create a simulation panel and add it to a JFrame
-        JFrame window = new JFrame("Warehouse Simulation");
-        SimulationPanel panel = new SimulationPanel(warehouse);
-        robot.addObserver(panel); // Register the panel as an observer of the robot
+            // Create a simulation panel and add it to a JFrame
+            JFrame window = new JFrame("Warehouse Simulation");
+            SimulationPanel panel = new SimulationPanel(warehouse);
+            robot.addObserver(panel); // Register the panel as an observer of the robot
 
-        window.add(panel);
-        window.setSize(800, 600);
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setVisible(true);
+            window.add(panel);
+            window.setSize(800, 600);
+            window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            window.setVisible(true);
 
-        final int[] distance = {1}; // 1 for right, -1 for left
+            final int[] distance = {1}; // 1 for right, -1 for left
 
-        // Run robot movement on a background thread
-        SimulationRunner runner = new SimulationRunner(robot, warehouse);
-        Thread simulationThread = new Thread(runner, "SimulationThread");
-        simulationThread.start();
+            // Run robot movement on a background thread
+            SimulationRunner runner = new SimulationRunner(robot, warehouse);
+            Thread simulationThread = new Thread(runner, "SimulationThread");
+            simulationThread.start();
 
-        robot.setState(new DeliveringState());
-        robot.performAction();
+            robot.setState(new DeliveringState());
+            robot.performAction();
 
-        robot.setState(new ChargingState());
-        robot.performAction();
+            robot.setState(new ChargingState());
+            robot.performAction();
 
-        robot.setState(new IdleState());
-        robot.performAction();
+            robot.setState(new IdleState());
+            robot.performAction();
 
-        warehouse.displayRobotStateSummary();
+            warehouse.displayRobotStateSummary();
+        });
     }
 }
