@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 public class Grid <T extends Entity> {
     private ArrayList<T> entities;
@@ -43,8 +44,10 @@ public class Grid <T extends Entity> {
     }
 
     public void displayEntities() {
-        for (T entity : entities) {
-            entity.display();
-        }
+        entities.stream().forEach(e -> e.display());
+    }
+
+    public Stream<T> stream() {
+        return entities.stream();
     }
 }
