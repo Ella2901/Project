@@ -2,14 +2,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Robot extends Entity {
+    // 1. Fields
     private int battery;
-    private List<RobotObserver> observers = new ArrayList<>();
-    private RobotState currentState;
+    private final List<RobotObserver> observers = new ArrayList<>();
 
     private MovementStrategy movementStrategy;
+    private RobotState currentState;
 
+    // 2. Constructor and Getters
     public Robot(int x, int y, int battery) {
         super(x, y);
+
+        if (battery < 0) {
+            throw new IllegalArgumentException(
+                "Battery cannot be negative"
+            );
+        }
+
         this.battery = battery;
     }
 
@@ -17,84 +26,91 @@ public class Robot extends Entity {
         return battery;
     }
 
-    // Override the display method from Entity
+    // 3. Display Method
     @Override
     public void display() {
-        System.out.println("Robot at (" + getX() + ", " + getY()
-                + ") with battery: " + battery);
+        System.out.println(
+            "Robot at (" + getX() + ", " + getY()
+            + ") with battery: " + battery
+        );
     }
 
-    // Overloaded movement method
+    // 4. Robot Movement
     // Move 1 unit to the right
     public void move() {
         move(1);
     }
 
-    // Move a specified distance
+    // Move horizontally by a specified distance
     public void move(int distance) {
-        if (distance == 0) {
+        moveBy(distance, 0);
+    }
+
+    // Move in both X and Y directions
+    public void moveBy(int dx, int dy) {
+
+        if (dx == 0 && dy == 0) {
             return;
         }
 
-        int requiredBattery = Math.abs(distance);
+        // Manhattan distance determines battery usage
+        long requiredBattery =
+            Math.abs((long) dx) + Math.abs((long) dy);
 
-        // Prevent movement when battery is insufficient
         if (battery < requiredBattery) {
             System.out.println("Not enough battery to move.");
             return;
         }
 
-        // Update robot position and battery
-        x += distance;
-        battery -= requiredBattery;
+        // Update robot position
+        x += dx;
+        y += dy;
 
-        // Notify observers when the robot moves
+        // Reduce battery based on movement distance
+        battery -= (int) requiredBattery;
+
+        // Notify observers to update the GUI
         notifyObservers();
     }
 
-    // Strategy Pattern: Set movement strategy
+    // 5. Strategy Pattern
     public void setMovementStrategy(MovementStrategy strategy) {
         this.movementStrategy = strategy;
     }
 
-    // Perform movement using the selected strategy
     public void performMove(Warehouse warehouse, int direction) {
         if (movementStrategy != null) {
             movementStrategy.move(this, warehouse, direction);
         }
     }
 
-    // Observer Pattern: Register an observer
+    // 6. Observer Pattern
     public void addObserver(RobotObserver observer) {
         if (observer != null && !observers.contains(observer)) {
             observers.add(observer);
         }
     }
 
-    // Remove an observer
     public void removeObserver(RobotObserver observer) {
         observers.remove(observer);
     }
 
-    // Notify observers when the robot moves or changes state
     private void notifyObservers() {
         for (RobotObserver observer : observers) {
             observer.onRobotMoved(this);
         }
     }
 
-    // State Pattern: Set the current robot state
+    // 7. State Pattern
     public void setState(RobotState state) {
         this.currentState = state;
         notifyObservers();
     }
 
-    // Get the current robot state
     public RobotState getState() {
         return currentState;
     }
 
-    // Perform the action associated with the current state
     public void performAction() {
         if (currentState != null) {
             currentState.handle(this);

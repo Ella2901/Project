@@ -33,17 +33,40 @@ public class Warehouse {
     }
 
     // 3. Robot Movement
+    // Existing method: Move the robot horizontally
     public void moveRobot(Robot robot, int distance) {
         synchronized (simulationLock) {
 
             int newX = robot.getX() + distance;
             int newY = robot.getY();
 
-            // Check that the new position is valid
+            // Validate the destination
             grid.checkPosition(newX, newY);
 
-            // Move the robot
+            // Move the robot horizontally
             robot.move(distance);
+        }
+    }
+
+    // New method: Move the robot in both X and Y directions
+    public void moveRobot(Robot robot, int dx, int dy) {
+        synchronized (simulationLock) {
+
+            // Calculate destination using long to avoid overflow
+            long newX = (long) robot.getX() + dx;
+            long newY = (long) robot.getY() + dy;
+
+            // Check warehouse boundaries
+            if (newX < 0 || newX >= grid.getWidth()
+                    || newY < 0 || newY >= grid.getHeight()) {
+
+                throw new InvalidPositionException(
+                    "Robot destination is outside the warehouse"
+                );
+            }
+
+            // Move after validation
+            robot.moveBy(dx, dy);
         }
     }
 
