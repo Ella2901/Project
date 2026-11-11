@@ -77,5 +77,7 @@ public class Main {
 
         robot.setState(new IdleState());
         robot.performAction();
+
+        warehouse.displayRobotStateSummary();
     }
 }
