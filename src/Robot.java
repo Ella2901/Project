@@ -31,7 +31,7 @@ public class Robot extends Entity {
     }
 
     // Move a specified distance
-    public synchronized void move(int distance) {
+    public void move(int distance) {
         if (distance == 0) {
             return;
         }
@@ -76,7 +76,7 @@ public class Robot extends Entity {
         observers.remove(observer);
     }
 
-    // Notify observers when robot position or state changes
+    // Notify observers when the robot moves or changes state
     private void notifyObservers() {
         for (RobotObserver observer : observers) {
             observer.onRobotMoved(this);
@@ -96,6 +96,8 @@ public class Robot extends Entity {
 
     // Perform the action associated with the current state
     public void performAction() {
-        currentState.handle(this);
+        if (currentState != null) {
+            currentState.handle(this);
+        }
     }
 }
