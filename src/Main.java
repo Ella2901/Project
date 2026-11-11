@@ -1,5 +1,4 @@
 import javax.swing.JFrame;
-import javax.swing.Timer;
 
 public class Main {
     public static void main(String[] args) {
@@ -47,28 +46,11 @@ public class Main {
 
         final int[] distance = {1}; // 1 for right, -1 for left
 
-        Timer timer = new Timer(100, e -> {
-            try {
-                if (robot.getX() >= 700){
-                    distance[0] = -1; // Change direction to left
-                } 
-                
-                if (robot.getX() <= 50) {
-                    distance[0] = 1; // Change direction to right
-                }
+        // Run robot movement on a background thread
+        SimulationRunner runner = new SimulationRunner(robot, warehouse);
+        Thread simulationThread = new Thread(runner, "SimulationThread");
+        simulationThread.start();
 
-                // Move the robot 2 units in the current direction
-                robot.performMove(warehouse, distance[0]);
-            } 
-
-            catch (InvalidPositionException ex) {
-                System.out.println(ex.getMessage());
-                // Change direction if the robot hits the boundary
-                distance[0] = -distance[0];
-            }
-        });
-
-        timer.start(); // Start the timer to move the robot every 100 milliseconds
         robot.setState(new DeliveringState());
         robot.performAction();
 
