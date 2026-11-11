@@ -17,14 +17,12 @@ public class Main {
                 new ChargingStation("CS001", 100, 400);
             DeliveryStation deliveryStation =
                 new DeliveryStation("DS001", 600, 400);
-            Shelf shelf = new Shelf("S001", 600, 150);
 
             // Add entities to the warehouse
             warehouse.addEntity(robot);
             warehouse.addEntity(package1);
             warehouse.addEntity(chargingStation);
             warehouse.addEntity(deliveryStation);
-            warehouse.addEntity(shelf);
 
             // Display warehouse statistics using streams
             warehouse.displayBatteryStatistics();
@@ -54,8 +52,7 @@ public class Main {
             window.setVisible(true);
 
             // Start automatic robot movement on a background thread
-            SimulationRunner runner =
-                new SimulationRunner(robot, warehouse);
+            SimulationRunner runner = new SimulationRunner(robot, warehouse, package1);
 
             Thread simulationThread =
                 new Thread(runner, "SimulationThread");

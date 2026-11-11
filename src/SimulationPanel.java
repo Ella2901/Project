@@ -52,12 +52,6 @@ public class SimulationPanel extends JPanel implements RobotObserver {
                     g.drawString("Delivery", x + 20, y + 30);
                 }
 
-                // Draw Shelf
-                else if (entity instanceof Shelf) {
-                    g.drawRect(x, y, 50, 50);
-                    g.drawString("Shelf", x + 10, y + 30);
-                }
-
                 // Draw other entities if needed
                 else {
                     g.drawOval(x, y, 20, 20);

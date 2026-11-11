@@ -1,70 +1,97 @@
 public class SimulationRunner implements Runnable {
+
     private final Robot robot;
     private final Warehouse warehouse;
-
-    // Allows the simulation to be stopped safely
+    private final Package targetPackage;
     private volatile boolean running = true;
 
-    public SimulationRunner(Robot robot, Warehouse warehouse) {
+    public SimulationRunner(Robot robot, Warehouse warehouse,
+                            Package targetPackage) {
         this.robot = robot;
         this.warehouse = warehouse;
+        this.targetPackage = targetPackage;
     }
 
     @Override
     public void run() {
-        int direction = 1;
 
         while (running && !Thread.currentThread().isInterrupted()) {
             try {
-                boolean shouldStop = false;
+                boolean finished = false;
 
-                // Protect shared robot data using the warehouse lock
                 synchronized (warehouse.getSimulationLock()) {
 
-                    // Stop if the robot has no battery
-                    if (robot.getBattery() <= 0) {
-                        shouldStop = true;
-                    } else {
+                    int robotX = robot.getX();
+                    int robotY = robot.getY();
 
-                        // Reverse direction at the right boundary
-                        if (robot.getX() >= 700) {
-                            direction = -1;
-                        }
+                    int targetX = targetPackage.getX();
+                    int targetY = targetPackage.getY();
 
-                        // Reverse direction at the left boundary
-                        if (robot.getX() <= 50) {
-                            direction = 1;
-                        }
+                    // Stop if the package has already been collected
+                    if (targetPackage.isPickedUp()) {
+                        finished = true;
 
-                        int previousX = robot.getX();
+                    // First move horizontally towards the package
+                    } else if (robotX != targetX) {
 
-                        // Strategy Pattern: move using selected strategy
+                        int direction = targetX > robotX ? 1 : -1;
+
+                        // Use the existing Strategy pattern
                         robot.performMove(warehouse, direction);
 
-                        // Stop if robot cannot complete the movement
-                        if (previousX == robot.getX()) {
+                    // Then move vertically towards the package
+                    } else if (robotY != targetY) {
+
+                        int stepY = targetY > robotY
+                                ? Math.min(5, targetY - robotY)
+                                : -Math.min(5, robotY - targetY);
+
+                        warehouse.moveRobot(robot, 0, stepY);
+
+                    // The robot has reached the package
+                    } else {
+
+                        boolean success = warehouse.pickUpPackage(
+                                robot, targetPackage
+                        );
+
+                        if (success) {
                             System.out.println(
-                                "Robot stopped because it cannot move."
+                                "Package collected successfully!"
                             );
-                            shouldStop = true;
+                        } else {
+                            System.out.println(
+                                "Package could not be collected."
+                            );
                         }
+
+                        finished = true;
+                    }
+
+                    // Detect insufficient battery or failed movement
+                    if (!finished
+                            && robot.getX() == robotX
+                            && robot.getY() == robotY) {
+
+                        System.out.println(
+                            "Robot cannot continue moving."
+                        );
+                        finished = true;
                     }
                 }
 
-                if (shouldStop) {
+                if (finished) {
                     break;
                 }
 
-                // Sleep outside the synchronized block
-                // so Swing can repaint without being blocked
+                // Pause between movements
                 Thread.sleep(100);
 
             } catch (InvalidPositionException e) {
-                // Reverse direction if the robot reaches the grid boundary
-                direction = -direction;
+                System.out.println(e.getMessage());
+                break;
 
             } catch (InterruptedException e) {
-                // Restore interrupt status and terminate the thread
                 Thread.currentThread().interrupt();
                 break;
             }
@@ -73,7 +100,6 @@ public class SimulationRunner implements Runnable {
         running = false;
     }
 
-    // Stop the simulation when requested
     public void stop() {
         running = false;
     }
