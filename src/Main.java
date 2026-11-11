@@ -10,7 +10,7 @@ public class Main {
             Warehouse warehouse = new Warehouse();
 
             // 2. Create and Configure the Robot
-            Robot robot = new Robot(100, 100, 1000);
+            Robot robot = new Robot(100, 100, 600);
 
             // Strategy Pattern: select movement speed
             robot.setMovementStrategy(new FastMovement());
@@ -23,7 +23,7 @@ public class Main {
             Package package1 = new Package("P001", 200, 150);
 
             ChargingStation chargingStation =
-                new ChargingStation("CS001", 100, 400);
+                new ChargingStation("CS001", 350, 300);
 
             DeliveryStation deliveryStation =
                 new DeliveryStation("DS001", 600, 400);
@@ -72,7 +72,8 @@ public class Main {
                 robot,
                 warehouse,
                 package1,
-                deliveryStation
+                deliveryStation,
+                chargingStation
             );
 
             Thread simulationThread = new Thread(

@@ -4,6 +4,7 @@ import java.util.List;
 public class Robot extends Entity {
     // 1. Fields
     private int battery;
+    private final int maxBattery;
     private final List<RobotObserver> observers = new ArrayList<>();
     private MovementStrategy movementStrategy;
     private RobotState currentState;
@@ -12,17 +13,33 @@ public class Robot extends Entity {
     public Robot(int x, int y, int battery) {
         super(x, y);
 
-        if (battery < 0) {
+        if (battery <= 0) {
             throw new IllegalArgumentException(
-                "Battery cannot be negative"
+                "Initial battery capacity must be positive"
             );
         }
 
         this.battery = battery;
+        this.maxBattery = battery;
     }
 
     public int getBattery() {
         return battery;
+    }
+
+    public int getMaxBattery() {
+        return maxBattery;
+    }
+
+    // Recharge the battery to its maximum capacity
+    public void recharge() {
+        battery = maxBattery;
+
+        System.out.println(
+            "Robot fully charged. Battery: " + battery
+        );
+
+        notifyObservers();
     }
 
     // 3. Display Method

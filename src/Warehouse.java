@@ -156,6 +156,37 @@ public class Warehouse {
     }
 
 
+    // Recharge the robot at a charging station
+    public boolean chargeRobot(Robot robot, ChargingStation station) {
+        synchronized (simulationLock) {
+            // Ensure both entities belong to the warehouse
+            boolean robotExists = grid.stream()
+                .anyMatch(entity -> entity == robot);
+
+            boolean stationExists = grid.stream()
+                .anyMatch(entity -> entity == station);
+
+            if (!robotExists || !stationExists) {
+                return false;
+            }
+
+            // Robot must reach the charging station
+            if (robot.getX() != station.getX()
+                || robot.getY() != station.getY()) {
+                    return false;
+                }
+
+            // Recharge the robot
+            robot.recharge();
+
+            System.out.println(
+                "Robot charged at station: " + station.getName()
+            );
+
+            return true;
+        }
+    }
+
     // 5. Statistics and Stream Operations
     public void displayBatteryStatistics() {
         synchronized (simulationLock) {
