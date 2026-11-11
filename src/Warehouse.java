@@ -108,6 +108,52 @@ public class Warehouse {
         }
     }
 
+    
+    // Complete a package delivery at the delivery station
+    public boolean deliverPackage(Robot robot,
+                                  Package packageToDeliver,
+                                  DeliveryStation station) {
+
+        synchronized (simulationLock) {
+            // Verify that all entities belong to the warehouse
+            boolean robotExists = grid.stream()
+                .anyMatch(entity -> entity == robot);
+
+            boolean packageExists = grid.stream()
+                .anyMatch(entity -> entity == packageToDeliver);
+
+            boolean stationExists = grid.stream()
+                .anyMatch(entity -> entity == station);
+
+            if (!robotExists || !packageExists || !stationExists) {
+                return false;
+            }
+
+            // Package must have been picked up first
+            if (!packageToDeliver.isPickedUp()
+                    || packageToDeliver.isDelivered()) {
+                return false;
+            }
+
+            // Robot must reach the delivery station
+            if (robot.getX() == station.getX()
+                    && robot.getY() == station.getY()) {
+
+                packageToDeliver.deliver();
+
+                System.out.println(
+                    "Package " + packageToDeliver.getId()
+                    + " delivered successfully!"
+                );
+
+                return true;
+            }
+
+            return false;
+        }
+    }
+
+
     // 5. Statistics and Stream Operations
     public void displayBatteryStatistics() {
         synchronized (simulationLock) {

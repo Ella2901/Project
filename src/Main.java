@@ -52,7 +52,9 @@ public class Main {
             window.setVisible(true);
 
             // Start automatic robot movement on a background thread
-            SimulationRunner runner = new SimulationRunner(robot, warehouse, package1);
+            SimulationRunner runner = new SimulationRunner(robot,
+                warehouse, package1, deliveryStation
+            );
 
             Thread simulationThread =
                 new Thread(runner, "SimulationThread");

@@ -1,81 +1,107 @@
 public class SimulationRunner implements Runnable {
-
+    // 1. Fields and Constructor
     private final Robot robot;
     private final Warehouse warehouse;
     private final Package targetPackage;
+    private final DeliveryStation deliveryStation;
+
     private volatile boolean running = true;
 
-    public SimulationRunner(Robot robot, Warehouse warehouse,
-                            Package targetPackage) {
+    public SimulationRunner(Robot robot,
+        Warehouse warehouse, Package targetPackage,
+        DeliveryStation deliveryStation
+    ) {
+
         this.robot = robot;
         this.warehouse = warehouse;
         this.targetPackage = targetPackage;
+        this.deliveryStation = deliveryStation;
     }
 
+    // 2. Main Simulation Loop
     @Override
     public void run() {
 
         while (running && !Thread.currentThread().isInterrupted()) {
+
             try {
                 boolean finished = false;
 
                 synchronized (warehouse.getSimulationLock()) {
 
-                    int robotX = robot.getX();
-                    int robotY = robot.getY();
+                    int previousX = robot.getX();
+                    int previousY = robot.getY();
 
-                    int targetX = targetPackage.getX();
-                    int targetY = targetPackage.getY();
+                    // Stage 1: Travel to the package
+                    if (!targetPackage.isPickedUp()) {
 
-                    // Stop if the package has already been collected
-                    if (targetPackage.isPickedUp()) {
-                        finished = true;
+                        if (hasReached(targetPackage)) {
 
-                    // First move horizontally towards the package
-                    } else if (robotX != targetX) {
-
-                        int direction = targetX > robotX ? 1 : -1;
-
-                        // Use the existing Strategy pattern
-                        robot.performMove(warehouse, direction);
-
-                    // Then move vertically towards the package
-                    } else if (robotY != targetY) {
-
-                        int stepY = targetY > robotY
-                                ? Math.min(5, targetY - robotY)
-                                : -Math.min(5, robotY - targetY);
-
-                        warehouse.moveRobot(robot, 0, stepY);
-
-                    // The robot has reached the package
-                    } else {
-
-                        boolean success = warehouse.pickUpPackage(
+                            boolean success = warehouse.pickUpPackage(
                                 robot, targetPackage
-                        );
-
-                        if (success) {
-                            System.out.println(
-                                "Package collected successfully!"
                             );
+
+                            if (success) {
+                                System.out.println(
+                                    "Robot collected package "
+                                    + targetPackage.getId()
+                                );
+                            } else {
+                                System.out.println("Pickup failed.");
+                                finished = true;
+                            }
+
                         } else {
-                            System.out.println(
-                                "Package could not be collected."
+                            moveTowards(
+                                targetPackage.getX(),
+                                targetPackage.getY()
                             );
                         }
 
+                    // Stage 2: Travel to delivery station
+                    } else if (!targetPackage.isDelivered()) {
+
+                        if (hasReached(deliveryStation)) {
+
+                            boolean success = warehouse.deliverPackage(
+                                robot,
+                                targetPackage,
+                                deliveryStation
+                            );
+
+                            if (success) {
+                                System.out.println(
+                                    "Delivery task completed!"
+                                );
+                            } else {
+                                System.out.println("Delivery failed.");
+                            }
+
+                            finished = true;
+
+                        } else {
+                            moveTowards(
+                                deliveryStation.getX(),
+                                deliveryStation.getY()
+                            );
+                        }
+
+                    } else {
+                        // Package has already been delivered
                         finished = true;
                     }
 
-                    // Detect insufficient battery or failed movement
+                    // Detect unsuccessful movement
                     if (!finished
-                            && robot.getX() == robotX
-                            && robot.getY() == robotY) {
+                            && robot.getX() == previousX
+                            && robot.getY() == previousY
+                            && !hasReached(targetPackage)
+                            && !hasReached(deliveryStation)) {
 
                         System.out.println(
                             "Robot cannot continue moving."
                         );
+
                         finished = true;
                     }
                 }
@@ -84,14 +110,16 @@ public class SimulationRunner implements Runnable {
                     break;
                 }
 
-                // Pause between movements
+                // Sleep outside the lock
                 Thread.sleep(100);
 
             } catch (InvalidPositionException e) {
+
                 System.out.println(e.getMessage());
                 break;
 
             } catch (InterruptedException e) {
+
                 Thread.currentThread().interrupt();
                 break;
             }
@@ -100,6 +128,47 @@ public class SimulationRunner implements Runnable {
         running = false;
     }
 
+    // 3. Navigation
+    // Check whether robot reached an entity
+    private boolean hasReached(Entity target) {
+        return robot.getX() == target.getX()
+            && robot.getY() == target.getY();
+    }
+
+    // Move robot towards the specified target
+    private void moveTowards(int targetX, int targetY) {
+
+        int currentX = robot.getX();
+        int currentY = robot.getY();
+
+        // Move horizontally first
+        if (currentX != targetX) {
+
+            int difference = targetX - currentX;
+
+            int step = Math.min(5, Math.abs(difference));
+            int direction = difference > 0 ? 1 : -1;
+
+            // Use Strategy Pattern for full 5-unit steps
+            if (step == 5) {
+                robot.performMove(warehouse, direction);
+            } else {
+                warehouse.moveRobot(robot, direction * step, 0);
+            }
+
+        // Then move vertically
+        } else if (currentY != targetY) {
+
+            int difference = targetY - currentY;
+
+            int step = Math.min(5, Math.abs(difference));
+            int direction = difference > 0 ? 1 : -1;
+
+            warehouse.moveRobot(robot, 0, direction * step);
+        }
+    }
+
+    // 4. Stop Simulation
     public void stop() {
         running = false;
     }
