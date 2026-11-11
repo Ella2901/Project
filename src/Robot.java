@@ -5,7 +5,6 @@ public class Robot extends Entity {
     // 1. Fields
     private int battery;
     private final List<RobotObserver> observers = new ArrayList<>();
-
     private MovementStrategy movementStrategy;
     private RobotState currentState;
 
@@ -99,6 +98,10 @@ public class Robot extends Entity {
         for (RobotObserver observer : observers) {
             observer.onRobotMoved(this);
         }
+    }
+
+    public void notifyTaskUpdated(){
+        notifyObservers();
     }
 
     // 7. State Pattern

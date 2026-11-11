@@ -96,6 +96,7 @@ public class Warehouse {
                     && robot.getY() == packageToPickUp.getY()) {
 
                 packageToPickUp.pickUp();
+                robot.notifyTaskUpdated();
 
                 System.out.println(
                     "Robot picked up package: " + packageToPickUp.getId()
@@ -140,6 +141,7 @@ public class Warehouse {
                     && robot.getY() == station.getY()) {
 
                 packageToDeliver.deliver();
+                robot.notifyTaskUpdated();
 
                 System.out.println(
                     "Package " + packageToDeliver.getId()
