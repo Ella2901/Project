@@ -10,6 +10,7 @@ public class SimulationRunner implements Runnable {
         this.warehouse = warehouse;
     }
 
+    
     @Override
     public void run() {
         int direction = 1;
@@ -28,8 +29,25 @@ public class SimulationRunner implements Runnable {
                     direction = 1;
                 }
 
-                // Continue using the Strategy pattern
-                robot.performMove(warehouse, direction);
+                int previousX;
+                int currentX;
+
+                synchronized (warehouse.getSimulationLock()) {
+                    previousX = robot.getX();
+
+                    // Move using the Strategy pattern
+                    robot.performMove(warehouse, direction);
+
+                    currentX = robot.getX();
+                }
+
+                // Stop if the robot cannot move
+                if (previousX == currentX) {
+                    System.out.println(
+                        "Robot stopped because movement could not be completed."
+                    );
+                    break;
+                }
 
                 Thread.sleep(100);
 
