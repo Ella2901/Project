@@ -49,6 +49,16 @@ public class SimulationPanel extends JPanel implements RobotObserver {
                     "Robot Battery: " + robot.getBattery(),
                     30, 45
                 );
+
+                // Display current robot state
+                String stateName = robot.getState() == null
+                    ? "No State"
+                    : robot.getState().getClass().getSimpleName();
+
+                g.drawString(
+                    "Robot State: " + stateName,
+                    30, 65
+                );
             }
 
             if (package1 != null) {

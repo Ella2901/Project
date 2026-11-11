@@ -3,76 +3,84 @@ import javax.swing.SwingUtilities;
 
 public class Main {
     public static void main(String[] args) {
+        // Run Swing components on the Event Dispatch Thread
         SwingUtilities.invokeLater(() -> {
-            // Create the warehouse
+
+            // 1. Create the Warehouse
             Warehouse warehouse = new Warehouse();
 
-            // Create the robot and select a movement strategy
+            // 2. Create and Configure the Robot
             Robot robot = new Robot(100, 100, 1000);
+
+            // Strategy Pattern: select movement speed
             robot.setMovementStrategy(new FastMovement());
 
-            // Create warehouse entities
+            // State Pattern: robot starts idle
+            robot.setState(new IdleState());
+            robot.performAction();
+
+            // 3. Create Warehouse Entities
             Package package1 = new Package("P001", 200, 150);
+
             ChargingStation chargingStation =
                 new ChargingStation("CS001", 100, 400);
+
             DeliveryStation deliveryStation =
                 new DeliveryStation("DS001", 600, 400);
 
-            // Add entities to the warehouse
+            // 4. Add Entities to the Warehouse
             warehouse.addEntity(robot);
             warehouse.addEntity(package1);
             warehouse.addEntity(chargingStation);
             warehouse.addEntity(deliveryStation);
 
-            // Display warehouse statistics using streams
+            // 5. Display Statistics Using Streams
             warehouse.displayBatteryStatistics();
 
             Grid<Entity> grid = warehouse.getGrid();
 
             long robotCount = grid.stream()
-                .filter(e -> e instanceof Robot)
+                .filter(entity -> entity instanceof Robot)
                 .count();
-            System.out.println("Number of robots: " + robotCount);
 
             long packageCount = grid.stream()
-                .filter(e -> e instanceof Package)
+                .filter(entity -> entity instanceof Package)
                 .count();
+
+            System.out.println("Number of robots: " + robotCount);
             System.out.println("Number of packages: " + packageCount);
 
-            // Create the graphical simulation window
-            JFrame window = new JFrame("Warehouse Simulation");
+            // 6. Create the Swing Window
+            JFrame window = new JFrame(
+                "Warehouse Delivery Robot Simulation"
+            );
+
             SimulationPanel panel = new SimulationPanel(warehouse);
 
-            // Observer Pattern: update the panel when the robot moves
+            // Observer Pattern: update GUI when robot changes
             robot.addObserver(panel);
 
             window.add(panel);
             window.setSize(800, 600);
+
             window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            window.setLocationRelativeTo(null);
             window.setVisible(true);
 
-            // Start automatic robot movement on a background thread
-            SimulationRunner runner = new SimulationRunner(robot,
-                warehouse, package1, deliveryStation
+            // 7. Start the Background Simulation
+            SimulationRunner runner = new SimulationRunner(
+                robot,
+                warehouse,
+                package1,
+                deliveryStation
             );
 
-            Thread simulationThread =
-                new Thread(runner, "SimulationThread");
+            Thread simulationThread = new Thread(
+                runner,
+                "SimulationThread"
+            );
 
             simulationThread.start();
-
-            // Demonstrate the State Pattern
-            robot.setState(new DeliveringState());
-            robot.performAction();
-
-            robot.setState(new ChargingState());
-            robot.performAction();
-
-            robot.setState(new IdleState());
-            robot.performAction();
-
-            // Display robot states using streams
-            warehouse.displayRobotStateSummary();
         });
     }
 }

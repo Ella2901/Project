@@ -21,7 +21,12 @@ public class SimulationRunner implements Runnable {
     // 2. Main Simulation Loop
     @Override
     public void run() {
+        synchronized (warehouse.getSimulationLock()) {
+            robot.setState(new DeliveringState());
+            robot.performAction();
+        }
 
+        // Begin the delivery task
         while (running && !Thread.currentThread().isInterrupted()) {
 
             try {
@@ -73,6 +78,11 @@ public class SimulationRunner implements Runnable {
                                 System.out.println(
                                     "Delivery task completed!"
                                 );
+
+                                // Return to IdleState after completing delivery
+                                robot.setState(new IdleState());
+                                robot.performAction();
+
                             } else {
                                 System.out.println("Delivery failed.");
                             }
