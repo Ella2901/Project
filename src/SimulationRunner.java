@@ -1,4 +1,3 @@
-
 public class SimulationRunner implements Runnable {
     // 1. Fields and Constructor
     private final Robot robot;
@@ -6,7 +5,7 @@ public class SimulationRunner implements Runnable {
     private final Package targetPackage;
     private final DeliveryStation deliveryStation;
     private final ChargingStation chargingStation;
-    
+
     private volatile boolean running = true;
 
     private boolean chargingTrip = false;
@@ -126,8 +125,11 @@ public class SimulationRunner implements Runnable {
 
                                 if (hasReached(chargingStation)) {
 
+                                    // Enter ChargingState only.
+                                    // The actual recharge happens on the
+                                    // next iteration after Warehouse
+                                    // validates the robot's location.
                                     robot.setState(new ChargingState());
-                                    robot.performAction();
 
                                     startedCharging = true;
 
@@ -189,7 +191,6 @@ public class SimulationRunner implements Runnable {
                 }
 
                 // Pause outside the simulation lock
-                // Longer pause makes charging state visible
                 Thread.sleep(startedCharging ? 750 : 100);
 
             } catch (InvalidPositionException e) {
@@ -220,15 +221,16 @@ public class SimulationRunner implements Runnable {
              + Math.abs(targetY - robot.getY());
     }
 
+    // Move horizontally first, then vertically
     private void moveTowards(int targetX, int targetY) {
 
         int currentX = robot.getX();
         int currentY = robot.getY();
 
-        // Move horizontally first
         if (currentX != targetX) {
 
             int difference = targetX - currentX;
+
             int step = Math.min(
                 STEP_SIZE, Math.abs(difference)
             );
@@ -244,7 +246,6 @@ public class SimulationRunner implements Runnable {
                 );
             }
 
-        // Then move vertically
         } else if (currentY != targetY) {
 
             int difference = targetY - currentY;

@@ -176,8 +176,10 @@ public class Warehouse {
                     return false;
                 }
 
-            // Recharge the robot
-            robot.recharge();
+            // Only charge when robot is in ChargingState
+            if (!(robot.getState() instanceof ChargingState)) {
+                return false;
+            }
 
             System.out.println(
                 "Robot charged at station: " + station.getName()
