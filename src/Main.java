@@ -1,20 +1,23 @@
+
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 public class Main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            // Create a warehouse instance
+            // Create the warehouse
             Warehouse warehouse = new Warehouse();
 
-            // Create entities
+            // Create the robot and select a movement strategy
             Robot robot = new Robot(100, 100, 1000);
-            // robot.setMovementStrategy(new NormalMovement());
             robot.setMovementStrategy(new FastMovement());
 
+            // Create warehouse entities
             Package package1 = new Package("P001", 200, 150);
-            ChargingStation chargingStation = new ChargingStation("CS001", 100, 400);
-            DeliveryStation deliveryStation = new DeliveryStation("DS001", 600, 400);
+            ChargingStation chargingStation =
+                new ChargingStation("CS001", 100, 400);
+            DeliveryStation deliveryStation =
+                new DeliveryStation("DS001", 600, 400);
             Shelf shelf = new Shelf("S001", 600, 150);
 
             // Add entities to the warehouse
@@ -24,35 +27,43 @@ public class Main {
             warehouse.addEntity(deliveryStation);
             warehouse.addEntity(shelf);
 
+            // Display warehouse statistics using streams
             warehouse.displayBatteryStatistics();
 
             Grid<Entity> grid = warehouse.getGrid();
 
-            // Count the number of robots in the grid
-            long robotCount = grid.stream().filter(e -> e instanceof Robot).count();
-            System.out.println("Number of robots in the grid: " + robotCount);
+            long robotCount = grid.stream()
+                .filter(e -> e instanceof Robot)
+                .count();
+            System.out.println("Number of robots: " + robotCount);
 
-            // Count the number of packages in the grid
-            long packageCount = grid.stream().filter(e -> e instanceof Package).count();
-            System.out.println("Number of packages in the grid: " + packageCount);
+            long packageCount = grid.stream()
+                .filter(e -> e instanceof Package)
+                .count();
+            System.out.println("Number of packages: " + packageCount);
 
-            // Create a simulation panel and add it to a JFrame
+            // Create the graphical simulation window
             JFrame window = new JFrame("Warehouse Simulation");
             SimulationPanel panel = new SimulationPanel(warehouse);
-            robot.addObserver(panel); // Register the panel as an observer of the robot
+
+            // Observer Pattern: update the panel when the robot moves
+            robot.addObserver(panel);
 
             window.add(panel);
             window.setSize(800, 600);
             window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             window.setVisible(true);
 
-            final int[] distance = {1}; // 1 for right, -1 for left
+            // Start automatic robot movement on a background thread
+            SimulationRunner runner =
+                new SimulationRunner(robot, warehouse);
 
-            // Run robot movement on a background thread
-            SimulationRunner runner = new SimulationRunner(robot, warehouse);
-            Thread simulationThread = new Thread(runner, "SimulationThread");
+            Thread simulationThread =
+                new Thread(runner, "SimulationThread");
+
             simulationThread.start();
 
+            // Demonstrate the State Pattern
             robot.setState(new DeliveringState());
             robot.performAction();
 
@@ -62,6 +73,7 @@ public class Main {
             robot.setState(new IdleState());
             robot.performAction();
 
+            // Display robot states using streams
             warehouse.displayRobotStateSummary();
         });
     }
