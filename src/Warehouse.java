@@ -15,12 +15,14 @@ public class Warehouse {
     }
 
     public void moveRobot(Robot robot, int distance) {
-        int newX = robot.getX() + distance;
-        int newY = robot.getY(); // Assuming movement is only horizontal for simplicity
+        synchronized(simulationLock){
+            int newX = robot.getX() + distance;
+            int newY = robot.getY(); // Assuming movement is only horizontal for simplicity
 
-        grid.checkPosition(newX, newY); // Check if the new position is valid
+            grid.checkPosition(newX, newY); // Check if the new position is valid
 
-        robot.move(distance); // Move the robot
+            robot.move(distance); // Move the robot
+        }
     }
 
     public void displayEntities() {
@@ -63,5 +65,11 @@ public class Warehouse {
 
     public Grid<Entity> getGrid() {
         return grid;
+    }
+
+    private final Object simulationLock = new Object();
+
+    public Object getSimulationLock() {
+        return simulationLock;
     }
 }
