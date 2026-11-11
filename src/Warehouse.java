@@ -1,5 +1,7 @@
 import java.util.IntSummaryStatistics;
 import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Warehouse {
     private Grid<Entity> grid;
@@ -38,6 +40,25 @@ public class Warehouse {
 
         System.out.println("Total robots: " + stats.getCount());
         System.out.println("Average Battery: " + stats.getAverage());
+    }
+
+
+    public void displayRobotStateSummary() {
+        Map<String, Long> stateCounts = grid.stream()
+            .filter(e -> e instanceof Robot)
+            .map(e -> (Robot) e)
+            .collect(Collectors.groupingBy(
+                robot -> robot.getState() == null
+                    ? "No State"
+                    : robot.getState().getClass().getSimpleName(),
+                Collectors.counting()
+            ));
+
+        System.out.println("=== Robot State Summary ===");
+
+        stateCounts.forEach((state, count) ->
+            System.out.println(state + ": " + count)
+        );
     }
 
     public Grid<Entity> getGrid() {

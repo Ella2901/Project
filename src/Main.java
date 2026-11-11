@@ -23,6 +23,8 @@ public class Main {
         warehouse.addEntity(deliveryStation);
         warehouse.addEntity(shelf);
 
+        warehouse.displayBatteryStatistics();
+
         Grid<Entity> grid = warehouse.getGrid();
 
         // Count the number of robots in the grid
@@ -67,40 +69,7 @@ public class Main {
         });
 
         timer.start(); // Start the timer to move the robot every 100 milliseconds
-
-        /* Testing the Robot, Package, and ChargingStation classes
-        Robot robot = new Robot(100, 100, 100);
-        Entity package1 = new Package("P001", 200, 150);
-        Entity chargingStation = new ChargingStation("CS001", 300, 250);
-
-        robot.display();
-        package1.display();
-        chargingStation.display();
-
-        robot.move();
-        robot.display();
-
-        robot.move(5);
-        robot.display();
-
-        Grid<Entity> grid = new Grid<>(800, 600);
-
-        grid.addEntity(robot);
-        grid.addEntity(package1);
-        grid.addEntity(chargingStation);
-
-        grid.displayEntities();
-
-        try {
-            warehouse.moveRobot(robot, 50);
-            robot.display();
-        } catch (InvalidPositionException e) {
-            System.out.println(e.getMessage());
-        }
-
-        */
-
-         robot.setState(new DeliveringState());
+        robot.setState(new DeliveringState());
         robot.performAction();
 
         robot.setState(new ChargingState());
